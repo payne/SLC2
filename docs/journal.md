@@ -24,6 +24,56 @@ can resume without re-reading the whole codebase.
 
 ---
 
+## 2026-06-25 (Phase 3 Complete)
+
+**Did:**
+- Implemented CheckInService for managing check-ins with real-time Firestore sync
+  - Real-time listener for check-ins ordered newest-first
+  - CRUD operations: addCheckIn, updateCheckIn, signOut
+  - Attribute snapshot capture from roster at check-in time
+- Implemented full net-log screen with AG Grid:
+  - Header bar with NCS/backup callsigns, organization, share code, net type, start time
+  - Adjustable clock component (font size, color, 12/24hr format) with local storage persistence
+  - Entry row for writers with callsign autocomplete from roster
+  - AG Grid with all columns: callsign, firstName, assignment, location, notes, 8 attribute columns, mileage, signOut, signIn
+  - Column chooser widget for toggling column visibility
+  - Inline editing for writers (NCS and backup)
+  - Sign-out button per row
+  - Live updates via Firestore real-time listener
+  - Footer with End NET button, comments editing, and menu (Export CSV)
+- Added UserService.getCallsignForUid() for displaying callsigns by UID with async caching
+
+**Why:**
+- Phase 3 requirement: Net logging grid with AG Grid, real-time sync, and NCS controls
+
+**Decisions:**
+- Used AG Grid Community with ClientSideRowModel and CsvExport modules
+- Column visibility state managed via signals with grid API sync
+- Entry row implemented as separate form above grid (not AG Grid pinnedTopRowData) for better UX
+- Clock settings persisted to localStorage per device
+
+**Acceptance Criteria Met:**
+- [x] Check-in lands at top with firstName + attributes populated
+- [x] Backup controller can edit rows (isWriter check includes backup)
+- [x] Non-writers are read-only (no entry row, no editable cells)
+- [x] Column chooser shows/hides columns
+- [x] End NET closes the net and redirects home
+- [x] Real-time updates from Firestore
+
+**Known Issues:**
+- Print PDF and Send Data menu items are disabled (Phase 4)
+- Remove all data not implemented (Phase 4)
+- Mobile responsive view not implemented (Phase 5)
+
+**Next steps:**
+- Phase 4: Export, send & print
+- Implement full ZIP export of all nets/checkins
+- Implement Print PDF with jsPDF
+- Implement Send data via Web Share API
+- Implement Remove all data (root only)
+
+---
+
 ## 2026-06-25 (Phase 2 Complete)
 
 **Did:**

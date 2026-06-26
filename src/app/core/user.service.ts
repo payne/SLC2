@@ -33,6 +33,9 @@ export class UserService {
   readonly isRoot = computed(() => isRoot(this._currentUser()));
   readonly callsign = computed(() => this._currentUser()?.callsign ?? null);
 
+  /** Cache of uid -> callsign mappings */
+  private callsignCache = new Map<string, string>();
+
   constructor() {
     // React to auth state changes
     effect(() => {
@@ -199,6 +202,47 @@ export class UserService {
 
     if (uid && email) {
       await this.loadUser(uid, email);
+    }
+  }
+
+  /**
+   * Get callsign for a user by UID (looks up from cache or Firestore)
+   */
+  getCallsignForUid(uid: string | undefined): string | null {
+    if (!uid) return null;
+
+    // Check if it's the current user
+    const currentUser = this._currentUser();
+    if (currentUser && currentUser.id === uid) {
+      return currentUser.callsign;
+    }
+
+    // Check cache
+    if (this.callsignCache.has(uid)) {
+      return this.callsignCache.get(uid) ?? null;
+    }
+
+    // Fetch asynchronously and cache
+    this.fetchAndCacheCallsign(uid);
+
+    // Return uid as fallback while loading
+    return uid.substring(0, 8) + '...';
+  }
+
+  /**
+   * Fetch callsign from Firestore and cache it
+   */
+  private async fetchAndCacheCallsign(uid: string): Promise<void> {
+    try {
+      const userDoc = await getDoc(doc(this.firestore, 'users', uid));
+      if (userDoc.exists()) {
+        const callsign = userDoc.data()['callsign'];
+        if (callsign) {
+          this.callsignCache.set(uid, callsign);
+        }
+      }
+    } catch {
+      // Silently fail - will show truncated UID
     }
   }
 }
