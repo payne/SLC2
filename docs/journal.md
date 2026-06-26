@@ -24,6 +24,54 @@ can resume without re-reading the whole codebase.
 
 ---
 
+## 2026-06-25 (Phase 6 Complete)
+
+**Did:**
+- Installed and configured Playwright for E2E testing
+- Created playwright.config.ts with two projects:
+  - `e2e`: Fast tests with `video: 'retain-on-failure'`
+  - `training-videos`: Slow-motion (500ms) with `video: 'on'` and 1920x1080 viewport
+- Created Page Object Model structure in e2e/pages/:
+  - HomePage: Join net, navigation
+  - NetLogPage: Check-in entry, grid operations, menu actions
+  - SignInPage: Auth flows
+- Created e2e/fixtures/test-data.ts with sample users, roster, and checkins
+- Created smoke.spec.ts: Basic app loading and navigation tests
+- Created offline.spec.ts: Critical offline functionality tests
+  - Test that check-ins persist through offline period
+  - Test that app remains functional while offline
+  - Test pending writes indicator during offline edits
+- Created training.spec.ts: Demo/training video recordings
+  - Logging check-ins demo
+  - Column chooser demo
+  - Mobile responsive view demo
+  - Adjustable clock demo
+  - Export functionality demo
+- Added npm scripts: `e2e`, `e2e:training`, `e2e:ui`
+
+**Why:**
+- Phase 6 requirement: E2E tests on emulators, offline test, training-videos project
+
+**Decisions:**
+- Used Page Object Model for maintainable tests
+- Offline test uses `context.setOffline(true/false)` for network simulation
+- Training tests include `waitForTimeout` pauses for narration/visibility
+- Smoke tests verify basic app loading without requiring auth
+
+**Acceptance Criteria Met:**
+- [x] Playwright configured with two projects (e2e and training-videos)
+- [x] Offline test verifies check-ins survive disconnect and sync on reconnect
+- [x] Training-videos project produces recordings with slowMo and video enabled
+- [x] Page Object Model structure for test maintainability
+
+**Next steps:**
+- Phase 7: Polish & deploy
+- Add PWA manifest with icons
+- Create README and CONTRIBUTING docs
+- Set up GitHub Actions deploy to Firebase Hosting
+
+---
+
 ## 2026-06-25 (Phase 5 Complete)
 
 **Did:**

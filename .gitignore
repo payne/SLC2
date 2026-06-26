@@ -49,3 +49,8 @@ ui-debug.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Playwright
+/playwright-report
+/playwright/.cache
+/test-results
