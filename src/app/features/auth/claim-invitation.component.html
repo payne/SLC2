@@ -1,0 +1,63 @@
+<div class="claim-container">
+  <mat-card class="claim-card">
+    <mat-card-header>
+      <mat-card-title>Welcome!</mat-card-title>
+      <mat-card-subtitle>You have a pending invitation</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (isLoading()) {
+        <div class="loading">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading invitation details...</p>
+        </div>
+      } @else if (invitation()) {
+        <div class="invitation-details">
+          <div class="detail-row">
+            <span class="label">Call Sign:</span>
+            <span class="value callsign">{{ invitation()!.callsign }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Access Level:</span>
+            <span class="value">{{ invitation()!.level | titlecase }}</span>
+          </div>
+        </div>
+
+        <p class="instructions">
+          Click the button below to claim your invitation and activate your account.
+        </p>
+
+        @if (errorMessage()) {
+          <p class="error-message">{{ errorMessage() }}</p>
+        }
+      } @else {
+        <p class="error-message">
+          No pending invitation found. Please contact an administrator.
+        </p>
+      }
+    </mat-card-content>
+
+    <mat-card-actions>
+      @if (invitation()) {
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="claimInvitation()"
+          [disabled]="isClaiming()"
+        >
+          @if (isClaiming()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <mat-icon>check_circle</mat-icon>
+            Claim Invitation
+          }
+        </button>
+      }
+
+      <button mat-button color="warn" (click)="signOut()">
+        <mat-icon>logout</mat-icon>
+        Sign Out
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -1,0 +1,39 @@
+<div class="sign-in-container">
+  <mat-card class="sign-in-card">
+    <mat-card-header>
+      <mat-card-title>Ham Net Logger</mat-card-title>
+      <mat-card-subtitle>Sign in to continue</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p class="description">
+        This application is invite-only. You must have received an invitation
+        from an existing member to access the system.
+      </p>
+
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="signInWithGoogle()"
+        [disabled]="isLoading"
+      >
+        @if (isLoading) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>login</mat-icon>
+          Sign in with Google
+        }
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <p class="offline-hint">
+    Already signed in before? The app works offline once you've authenticated.
+  </p>
+</div>

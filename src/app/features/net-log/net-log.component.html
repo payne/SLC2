@@ -1,0 +1,52 @@
+<div class="net-log-container">
+  <header class="net-header">
+    <button mat-icon-button (click)="leaveNet()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="net-info">
+      <h1>{{ netService.activeNet()?.organization }}</h1>
+      <span class="net-type">{{ netService.activeNet()?.netType }}</span>
+    </div>
+    <div class="header-controls">
+      <span class="sync-status" [class]="syncService.statusClass()">
+        {{ syncService.statusText() }}
+      </span>
+      <span class="callsign">{{ userService.callsign() }}</span>
+    </div>
+  </header>
+
+  <main class="net-content">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Net Log</mat-card-title>
+        <mat-card-subtitle>
+          Share Code: <strong>{{ netService.activeNet()?.joinCode }}</strong>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p>
+          @if (netService.isWriter()) {
+            You are a writer (NCS or Backup). Full logging grid will be available in Phase 3.
+          } @else {
+            You are viewing this net in read-only mode.
+          }
+        </p>
+
+        <p>
+          <strong>NCS:</strong> {{ netService.activeNet()?.ncs }}<br />
+          @if (netService.activeNet()?.backupNcs) {
+            <strong>Backup:</strong> {{ netService.activeNet()?.backupNcs }}
+          }
+        </p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="warn" (click)="leaveNet()">
+          <mat-icon>exit_to_app</mat-icon>
+          Leave Net
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </main>
+</div>

@@ -24,6 +24,69 @@ can resume without re-reading the whole codebase.
 
 ---
 
+## 2026-06-25 (Phase 1 Complete)
+
+**Did:**
+- Created data model interfaces: User, Invitation, Person, Net, CheckIn, AuditEvent, Config
+- Implemented core services:
+  - `AuthService`: Google sign-in (popup/redirect), Firebase Auth integration
+  - `UserService`: Invite-only claim flow, tier checks (operator/inviter/root)
+  - `AdminService`: Invite/promote/demote/remove/revoke with audit logging
+  - `NetService`: Net creation, join codes, NCS claim/handoff, presence heartbeat
+  - `SyncService`: Online/offline/pending-writes status indicator
+- Created auth guards: `authGuard`, `inviterGuard`, `rootGuard`, `signInGuard`
+- Created feature components:
+  - Auth: SignIn, ClaimInvitation, NoAccess
+  - Home: Join net with code, admin link for inviters
+  - Admin: Create nets, invite users, manage users (promote/demote/remove)
+  - NetLog: Placeholder for Phase 3 (shows join code, NCS info)
+- Implemented complete `firestore.rules` with:
+  - Invite-only user creation via pending invitation
+  - Tier-based access (operator/inviter/root)
+  - NCS-only check-in writes
+  - Membership-gated reads
+  - Append-only audit log
+- Created firestore.rules test suite with Vitest + @firebase/rules-unit-testing
+- Implemented seed script with Firebase Admin SDK (seed/seed-users.ts)
+  - Seeds N3PAY and KF0SLC as root users (placeholder emails)
+  - Seeds sample roster data for emulator
+  - Supports both emulator and production modes
+
+**Why:**
+- Phase 1 requirement: identity & access, data model, invite-only flow, security rules
+
+**Decisions:**
+- Using signals throughout services for reactive state management
+- Auth uses popup on desktop, redirect on mobile for better UX
+- Join codes use radio-friendly alphabet (no 0/O/1/l/I ambiguity)
+- Presence heartbeat every 20s, stale threshold 60s
+- Audit log is append-only, readable only by root
+
+**Acceptance Criteria Met:**
+- [x] Data model interfaces defined (shared/models/)
+- [x] Google sign-in implemented
+- [x] Invite-only claim flow working
+- [x] Tier permissions (operator/inviter/root) enforced
+- [x] Invite/promote/demote/remove with audit logging
+- [x] Net access codes with uniqueness validation
+- [x] NCS claim/handoff logic
+- [x] Security rules comprehensive and tested
+- [x] Seed script ready (placeholder emails)
+- [x] Sync indicator service
+
+**Known Issues:**
+- Bundle size warning (1.25MB initial) due to Firebase + AG Grid + Material
+- AngularFire v20 requires --legacy-peer-deps for Angular 22
+
+**Next steps:**
+- Phase 2: Roster + CSV import/export + attribute config
+- Implement RosterService with in-memory signal store
+- Create roster CRUD components
+- Implement normalized ZIP CSV import/export
+- Create attribute config upload
+
+---
+
 ## 2026-06-25 (Phase 0 Complete)
 
 **Did:**
