@@ -19,10 +19,12 @@ export const authGuard: CanActivateFn = () => {
     case 'no-access':
       return router.createUrlTree(['/no-access']);
     case 'signed-out':
+    case 'error':
       return router.createUrlTree(['/sign-in']);
+    case 'loading':
     default:
-      // Still loading, allow through (component can show loading state)
-      return true;
+      // Still loading - redirect to sign-in which will redirect back when ready
+      return router.createUrlTree(['/sign-in']);
   }
 };
 
@@ -63,9 +65,16 @@ export const signInGuard: CanActivateFn = () => {
 
   const accessState = userService.accessState();
 
-  if (accessState === 'authorized') {
-    return router.createUrlTree(['/']);
+  switch (accessState) {
+    case 'authorized':
+      return router.createUrlTree(['/']);
+    case 'pending-claim':
+      return router.createUrlTree(['/claim']);
+    case 'signed-out':
+    case 'loading':
+    case 'error':
+    default:
+      // Show sign-in page
+      return true;
   }
-
-  return true;
 };

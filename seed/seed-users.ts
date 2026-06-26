@@ -24,13 +24,17 @@ import { getAuth } from 'firebase-admin/auth';
 const ROOT_USERS = [
   {
     callsign: 'N3PAY',
-    email: '<<TODO: supply N3PAY Gmail>>',
+    // For emulator testing, use a test email
+    // Replace with actual Gmail for production
+    email: process.env.N3PAY_EMAIL || 'n3pay@test.example.com',
     level: 'inviter' as const,
     root: true,
   },
   {
     callsign: 'KF0SLC',
-    email: '<<TODO: supply KF0SLC Gmail>>',
+    // For emulator testing, use a test email
+    // Replace with actual Gmail for production
+    email: process.env.KF0SLC_EMAIL || 'kf0slc@test.example.com',
     level: 'inviter' as const,
     root: true,
   },
@@ -74,8 +78,8 @@ async function seedRootUsers(): Promise<void> {
   console.log('\n📋 Seeding root users...\n');
 
   for (const user of ROOT_USERS) {
-    // Validate email is set
-    if (user.email.includes('<<TODO')) {
+    // Validate email is set (skip if still placeholder)
+    if (user.email.includes('<<TODO') || user.email.includes('undefined')) {
       console.log(`⏭️  Skipping ${user.callsign}: Email placeholder not replaced`);
       continue;
     }
