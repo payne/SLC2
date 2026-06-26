@@ -24,6 +24,53 @@ can resume without re-reading the whole codebase.
 
 ---
 
+## 2026-06-25 (Phase 5 Complete)
+
+**Did:**
+- Created MobileViewerComponent for read-only phone viewport experience
+  - Card-based Material layout showing check-ins with callsign, name, time, and attributes
+  - Responsive styling with scrollable list
+- Created PresenceListComponent for live presence roster
+  - Shows active viewers with NCS/Backup role badges
+  - 60-second staleness threshold for viewer activity
+  - NCS can assign/remove backup controller from presence menu
+- Created NcsTakeoverDialogComponent for presence-driven NCS takeover
+  - Different messaging for stale vs active NCS
+  - Warning UI for active NCS takeover attempts
+- Updated NetLogComponent with responsive breakpoints:
+  - isMobile signal for viewport detection (< 768px)
+  - Shows MobileViewerComponent on mobile, AG Grid on desktop
+  - Added resize listener for dynamic viewport changes
+- Updated SCSS with responsive media queries:
+  - Header wraps on mobile with reordered elements
+  - Entry row fields stack on mobile
+  - Footer elements center on mobile
+- Added getPresenceObservable() to NetService for real-time presence subscription
+
+**Why:**
+- Phase 5 requirement: Responsive mobile view and live presence tracking
+
+**Decisions:**
+- Card-based mobile view instead of simplified table for better touch UX
+- 60-second staleness threshold matches presence heartbeat timing
+- Backup controller assignment only available to current NCS
+- Mobile breakpoint at 768px matches common tablet/phone boundary
+
+**Acceptance Criteria Met:**
+- [x] Mobile read-only viewer shows data in card format
+- [x] Presence list shows active viewers with role indicators
+- [x] NCS can assign backup controller from presence menu
+- [x] Takeover dialog handles both stale and active NCS scenarios
+- [x] Responsive styles work at mobile breakpoints
+
+**Next steps:**
+- Phase 6: E2E + training videos
+- Set up Playwright with emulators
+- Create offline mode test
+- Create training-videos project structure
+
+---
+
 ## 2026-06-25 (Phase 4 Complete)
 
 **Did:**

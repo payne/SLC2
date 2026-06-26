@@ -51,6 +51,9 @@ import { ClockComponent } from './clock.component';
 import { ColumnChooserComponent } from './column-chooser.component';
 import { AboutDialogComponent } from './about-dialog.component';
 import { RemoveDataDialogComponent } from './remove-data-dialog.component';
+import { MobileViewerComponent } from './mobile-viewer.component';
+import { PresenceListComponent } from './presence-list.component';
+import { NcsTakeoverDialogComponent } from './ncs-takeover-dialog.component';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([ClientSideRowModelModule, CsvExportModule]);
@@ -89,6 +92,8 @@ interface EntryRowData {
     AgGridAngular,
     ClockComponent,
     ColumnChooserComponent,
+    MobileViewerComponent,
+    PresenceListComponent,
   ],
   templateUrl: './net-log.component.html',
   styleUrl: './net-log.component.scss',
@@ -107,6 +112,9 @@ export class NetLogComponent implements OnInit, OnDestroy {
   exportService = inject(ExportService);
 
   netTypes = NET_TYPES;
+
+  // Mobile detection
+  isMobile = signal(window.innerWidth < 768);
 
   // Entry row data
   entryCallsign = '';
@@ -278,6 +286,10 @@ export class NetLogComponent implements OnInit, OnDestroy {
     ];
   });
 
+  private resizeHandler = () => {
+    this.isMobile.set(window.innerWidth < 768);
+  };
+
   constructor() {
     // Update grid when check-ins change
     effect(() => {
@@ -289,6 +301,9 @@ export class NetLogComponent implements OnInit, OnDestroy {
         });
       }
     });
+
+    // Listen for window resize
+    window.addEventListener('resize', this.resizeHandler);
   }
 
   async ngOnInit(): Promise<void> {
@@ -310,6 +325,7 @@ export class NetLogComponent implements OnInit, OnDestroy {
     this.stopPresenceHeartbeat();
     this.checkinService.unsubscribeFromNet();
     this.netSubscription?.unsubscribe();
+    window.removeEventListener('resize', this.resizeHandler);
   }
 
   private startPresenceHeartbeat(netId: string): void {
@@ -589,6 +605,62 @@ export class NetLogComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  // NCS takeover
+  async claimNcs(): Promise<void> {
+    const netId = this.netService.activeNet()?.id;
+    if (!netId) return;
+
+    // Check if current NCS is stale
+    const isStale = await this.netService.isNcsPresenceStale(netId);
+    const currentNcsCallsign = this.userService.getCallsignForUid(
+      this.netService.activeNet()?.ncs
+    ) || 'Unknown';
+
+    // Show takeover dialog
+    const dialogRef = this.dialog.open(NcsTakeoverDialogComponent, {
+      width: '400px',
+      data: {
+        currentNcsCallsign,
+        isStale,
+      },
+    });
+
+    const confirmed = await dialogRef.afterClosed().toPromise();
+    if (confirmed) {
+      try {
+        await this.netService.claimNcs(netId);
+        this.snackBar.open('You are now the Net Controller', 'Dismiss', {
+          duration: 3000,
+        });
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Failed to claim NCS';
+        this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+      }
+    }
+  }
+
+  // Assign backup controller
+  async assignBackupController(uid: string | null): Promise<void> {
+    const netId = this.netService.activeNet()?.id;
+    if (!netId) return;
+
+    try {
+      await this.netService.assignBackup(netId, uid);
+      if (uid) {
+        this.snackBar.open('Backup controller assigned', 'Dismiss', {
+          duration: 3000,
+        });
+      } else {
+        this.snackBar.open('Backup controller removed', 'Dismiss', {
+          duration: 3000,
+        });
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to assign backup';
+      this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+    }
   }
 
   // Utilities

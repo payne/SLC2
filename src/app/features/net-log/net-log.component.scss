@@ -298,3 +298,62 @@ mat-icon-button mat-icon {
     color: #c62828 !important;
   }
 }
+
+// Responsive
+@media (max-width: 767px) {
+  .net-header {
+    flex-wrap: wrap;
+    padding: 0.5rem;
+
+    .header-main {
+      order: 2;
+      flex-basis: 100%;
+    }
+
+    .header-row {
+      gap: 0.5rem;
+    }
+
+    .header-field {
+      flex: 1 0 45%;
+    }
+
+    .header-clock {
+      order: 1;
+    }
+  }
+
+  .entry-row {
+    flex-wrap: wrap;
+
+    .entry-field {
+      flex: 1 0 45%;
+
+      &.callsign-field {
+        flex: 1 0 100%;
+      }
+
+      &.notes-field {
+        flex: 1 0 100%;
+      }
+    }
+  }
+
+  .net-footer {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .footer-left,
+    .footer-center,
+    .footer-right {
+      flex: 1 0 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Mobile viewer container
+app-mobile-viewer {
+  flex: 1;
+  overflow: hidden;
+}

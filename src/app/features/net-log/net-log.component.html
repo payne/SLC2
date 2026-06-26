@@ -75,6 +75,20 @@
         <div class="header-field">
           <span class="your-callsign">{{ userService.callsign() }}</span>
         </div>
+
+        <app-presence-list
+          [netId]="netService.activeNet()?.id || ''"
+          [currentNcs]="netService.activeNet()?.ncs || ''"
+          [currentBackup]="netService.activeNet()?.backupNcs"
+          [canAssignBackup]="netService.isWriter() && netService.activeNet()?.ncs === userService.currentUser()?.id"
+          (assignBackup)="assignBackupController($event)"
+        ></app-presence-list>
+
+        @if (!netService.isWriter()) {
+          <button mat-raised-button color="accent" (click)="claimNcs()">
+            Claim NCS
+          </button>
+        }
       </div>
     </div>
 
@@ -148,25 +162,33 @@
       </div>
     }
 
-    <!-- AG Grid -->
-    <ag-grid-angular
-      class="ag-theme-quartz net-grid"
-      [rowData]="rowData()"
-      [columnDefs]="colDefs()"
-      [defaultColDef]="defaultColDef"
-      [getRowId]="getRowId"
-      [animateRows]="true"
-      (gridReady)="onGridReady($event)"
-      (cellValueChanged)="onCellValueChanged($event)"
-      (cellClicked)="onCellClicked($event)"
-    ></ag-grid-angular>
+    @if (isMobile()) {
+      <!-- Mobile Viewer -->
+      <app-mobile-viewer
+        [checkins]="rowData()"
+        [attributeColumns]="rosterService.attributeConfig().attributeColumns"
+      ></app-mobile-viewer>
+    } @else {
+      <!-- AG Grid -->
+      <ag-grid-angular
+        class="ag-theme-quartz net-grid"
+        [rowData]="rowData()"
+        [columnDefs]="colDefs()"
+        [defaultColDef]="defaultColDef"
+        [getRowId]="getRowId"
+        [animateRows]="true"
+        (gridReady)="onGridReady($event)"
+        (cellValueChanged)="onCellValueChanged($event)"
+        (cellClicked)="onCellClicked($event)"
+      ></ag-grid-angular>
 
-    <!-- Column Chooser -->
-    <app-column-chooser
-      [columnVisibility]="columnVisibility()"
-      [attributeColumns]="rosterService.attributeConfig().attributeColumns"
-      (visibilityChange)="toggleColumn($event.column, $event.visible)"
-    ></app-column-chooser>
+      <!-- Column Chooser -->
+      <app-column-chooser
+        [columnVisibility]="columnVisibility()"
+        [attributeColumns]="rosterService.attributeConfig().attributeColumns"
+        (visibilityChange)="toggleColumn($event.column, $event.visible)"
+      ></app-column-chooser>
+    }
   </main>
 
   <!-- Footer -->
