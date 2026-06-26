@@ -45,6 +45,14 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'roster',
+    canActivate: [authGuard, inviterGuard],
+    loadComponent: () =>
+      import('./features/roster/roster.component').then(
+        (m) => m.RosterComponent
+      ),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

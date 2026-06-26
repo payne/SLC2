@@ -24,6 +24,54 @@ can resume without re-reading the whole codebase.
 
 ---
 
+## 2026-06-25 (Phase 2 Complete)
+
+**Did:**
+- Implemented RosterService with in-memory signal store for roster data
+  - Real-time Firestore listener loads full roster into memory at startup
+  - Signal-based reactivity with computed rosterArray and count
+  - Search by partial callsign or name with relevance sorting
+  - CRUD operations: addPerson, updatePerson, deletePerson, bulkUpsert
+  - Attribute config loading and management
+- Created roster feature components:
+  - `roster.component`: List view with search, import/export menu
+  - `person-dialog.component`: Add/edit person dialog with tabs (Basic Info, Abilities, Training)
+  - `import-dialog.component`: ZIP file import with preview and validation
+- Implemented CsvService for normalized ZIP CSV import/export:
+  - Export generates ZIP with: people.csv, attributes.csv, trainings.csv, certifications.csv, abilities.csv
+  - Import parses ZIP files, validates data, shows preview with new/update/unchanged status
+  - Uses PapaParse for CSV parsing and JSZip for ZIP handling
+- Added roster route protected by authGuard + inviterGuard
+
+**Why:**
+- Phase 2 requirement: Roster management with CSV import/export for bulk data handling
+
+**Decisions:**
+- Roster stored in-memory as a Map<callsign, Person> for fast lookup
+- CSV import shows preview before committing to allow user verification
+- ZIP format chosen for normalized export (one entity type per CSV file)
+- Trainings and certifications managed via CSV import (not inline editing in dialog)
+
+**Acceptance Criteria Met:**
+- [x] RosterService with in-memory signal store
+- [x] Roster CRUD UI (list, add, edit, delete)
+- [x] CSV import with validation and preview
+- [x] CSV export as normalized ZIP
+- [x] Search/filter roster by callsign or name
+
+**Known Issues:**
+- Attribute config JSON upload not yet implemented (deferred to later)
+- CommonJS warnings for papaparse, jszip, file-saver (expected, no impact)
+
+**Next steps:**
+- Phase 3: Net logging grid with AG Grid
+- Implement checkin grid with callsign autocomplete
+- Add NCS handoff UI
+- Implement column config for custom attributes
+- Add real-time sync from Firestore
+
+---
+
 ## 2026-06-25 (Phase 1 Complete)
 
 **Did:**

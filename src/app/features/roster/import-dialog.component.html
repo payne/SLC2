@@ -1,0 +1,126 @@
+<h2 mat-dialog-title>Import Roster</h2>
+
+<mat-dialog-content>
+  @switch (step()) {
+    @case ('upload') {
+      <div class="upload-area">
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <p>Select a ZIP file containing roster CSVs</p>
+        <p class="hint">
+          Expected files: people.csv (required), attributes.csv, trainings.csv, certifications.csv, abilities.csv
+        </p>
+        <input
+          type="file"
+          accept=".zip"
+          #fileInput
+          (change)="onFileSelected($event)"
+          style="display: none"
+        />
+        <button mat-raised-button color="primary" (click)="fileInput.click()">
+          <mat-icon>folder_open</mat-icon>
+          Select ZIP File
+        </button>
+      </div>
+    }
+
+    @case ('preview') {
+      <div class="preview-area">
+        <h3>Preview Import</h3>
+
+        @if (preview(); as p) {
+          <div class="summary">
+            <p><strong>{{ p.people.length }}</strong> people</p>
+            <p><strong>{{ p.trainings.length }}</strong> training records</p>
+            <p><strong>{{ p.certifications.length }}</strong> certification records</p>
+            <p><strong>{{ p.abilities.length }}</strong> ability records</p>
+          </div>
+
+          @if (p.errors.length > 0) {
+            <div class="errors">
+              <h4>Validation Warnings</h4>
+              <ul>
+                @for (err of p.errors; track $index) {
+                  <li>{{ err.file }} (row {{ err.row }}): {{ err.message }}</li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (p.people.length > 0) {
+            <h4>People to Import</h4>
+            <div class="table-container">
+              <table mat-table [dataSource]="p.people.slice(0, 10)">
+                <ng-container matColumnDef="callsign">
+                  <th mat-header-cell *matHeaderCellDef>Call Sign</th>
+                  <td mat-cell *matCellDef="let row">{{ row.callsign }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>Name</th>
+                  <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="licenseClass">
+                  <th mat-header-cell *matHeaderCellDef>License</th>
+                  <td mat-cell *matCellDef="let row">{{ row.licenseClass || '-' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let row">
+                    @if (row.isNew) {
+                      <span class="status new">New</span>
+                    } @else if (row.hasChanges) {
+                      <span class="status update">Update</span>
+                    } @else {
+                      <span class="status unchanged">No change</span>
+                    }
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+              </table>
+            </div>
+
+            @if (p.people.length > 10) {
+              <p class="more-hint">...and {{ p.people.length - 10 }} more</p>
+            }
+          }
+        }
+      </div>
+    }
+
+    @case ('importing') {
+      <div class="importing-area">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <p>Importing roster data...</p>
+      </div>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @switch (step()) {
+    @case ('upload') {
+      <button mat-button (click)="cancel()">Cancel</button>
+    }
+
+    @case ('preview') {
+      <button mat-button (click)="reset()">Back</button>
+      <button mat-button (click)="cancel()">Cancel</button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="confirmImport()"
+        [disabled]="!preview()?.people?.length"
+      >
+        Import {{ preview()?.people?.length }} People
+      </button>
+    }
+
+    @case ('importing') {
+      <!-- No actions while importing -->
+    }
+  }
+</mat-dialog-actions>
