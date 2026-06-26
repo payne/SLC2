@@ -24,6 +24,45 @@ can resume without re-reading the whole codebase.
 
 ---
 
+## 2026-06-25 (Phase 4 Complete)
+
+**Did:**
+- Implemented ExportService with all export capabilities:
+  - Per-net CSV export via AG Grid
+  - Full multi-net ZIP export (nets.csv + checkins.csv)
+  - Print PDF using jsPDF + jspdf-autotable with proper formatting
+  - Send data via Web Share API with mailto fallback
+- Created About dialog with app info
+- Created Remove All Data dialog (root only):
+  - Typed confirmation required ("DELETE ALL DATA")
+  - Batch deletes all nets, check-ins, members, and presence docs
+  - Preserves roster and user data
+- Updated net-log footer menu with all actions
+
+**Why:**
+- Phase 4 requirement: Export, send & print capabilities plus data management
+
+**Decisions:**
+- PDF uses jsPDF with autotable for clean table rendering
+- Web Share API with graceful fallback to download + mailto for unsupported browsers
+- Remove all data requires typed confirmation for safety
+
+**Acceptance Criteria Met:**
+- [x] CSVs export cleanly (per-net and full ZIP)
+- [x] Full export contains all nets + check-ins
+- [x] Print PDF renders the log with attribute columns
+- [x] Send shares/emails the export via Web Share API or fallback
+- [x] Remove all data works (root only with typed confirm)
+
+**Next steps:**
+- Phase 5: Responsive + presence
+- Add mobile read-only viewer (Material list/cards)
+- Implement Material ↔ AG Grid theming bridge
+- Add live presence roster display
+- Implement presence-driven NCS takeover prompt
+
+---
+
 ## 2026-06-25 (Phase 3 Complete)
 
 **Did:**

@@ -7,4 +7,5 @@ export * from './sync.service';
 export * from './roster.service';
 export * from './csv.service';
 export * from './checkin.service';
+export * from './export.service';
 export * from './auth.guard';

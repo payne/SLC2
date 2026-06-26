@@ -289,3 +289,12 @@ button {
 mat-icon-button mat-icon {
   margin-right: 0;
 }
+
+// Menu styling
+.danger-item {
+  color: #c62828 !important;
+
+  mat-icon {
+    color: #c62828 !important;
+  }
+}

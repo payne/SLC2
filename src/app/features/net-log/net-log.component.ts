@@ -42,12 +42,15 @@ import {
   SyncService,
   RosterService,
   CheckInService,
+  ExportService,
 } from '../../core';
 import { CheckIn } from '../../shared/models/checkin.model';
 import { NET_TYPES, NetType } from '../../shared/models/net.model';
 import { Person } from '../../shared/models/person.model';
 import { ClockComponent } from './clock.component';
 import { ColumnChooserComponent } from './column-chooser.component';
+import { AboutDialogComponent } from './about-dialog.component';
+import { RemoveDataDialogComponent } from './remove-data-dialog.component';
 
 // Register AG Grid modules
 ModuleRegistry.registerModules([ClientSideRowModelModule, CsvExportModule]);
@@ -101,6 +104,7 @@ export class NetLogComponent implements OnInit, OnDestroy {
   syncService = inject(SyncService);
   rosterService = inject(RosterService);
   checkinService = inject(CheckInService);
+  exportService = inject(ExportService);
 
   netTypes = NET_TYPES;
 
@@ -516,11 +520,74 @@ export class NetLogComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  // Export
+  // Export and menu actions
   exportCsv(): void {
-    if (!this.gridApi) return;
-    this.gridApi.exportDataAsCsv({
-      fileName: `net-log-${this.netService.activeNet()?.id}.csv`,
+    try {
+      this.exportService.exportCurrentNetCsv();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Export failed';
+      this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+    }
+  }
+
+  async exportAllNets(): Promise<void> {
+    try {
+      await this.exportService.exportAllNetsZip();
+      this.snackBar.open('Export complete', 'Dismiss', { duration: 3000 });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Export failed';
+      this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+    }
+  }
+
+  printPdf(): void {
+    try {
+      this.exportService.printCurrentNetPdf();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Print failed';
+      this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+    }
+  }
+
+  async sendData(): Promise<void> {
+    try {
+      await this.exportService.sendCurrentNetData();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Send failed';
+      this.snackBar.open(message, 'Dismiss', { duration: 3000 });
+    }
+  }
+
+  openAbout(): void {
+    this.dialog.open(AboutDialogComponent, {
+      width: '450px',
+    });
+  }
+
+  openRemoveData(): void {
+    if (!this.userService.isRoot()) {
+      this.snackBar.open('Only root users can remove all data', 'Dismiss', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(RemoveDataDialogComponent, {
+      width: '450px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.deleted) {
+        this.snackBar.open('All net data has been deleted', 'Dismiss', {
+          duration: 5000,
+        });
+        this.router.navigate(['/']);
+      } else if (result?.error) {
+        this.snackBar.open('Failed to delete data', 'Dismiss', {
+          duration: 3000,
+        });
+      }
     });
   }
 

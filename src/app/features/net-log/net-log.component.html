@@ -220,21 +220,32 @@
       <mat-menu #footerMenu="matMenu">
         <button mat-menu-item (click)="exportCsv()">
           <mat-icon>download</mat-icon>
-          Export CSV
+          Export This Net (CSV)
         </button>
-        <button mat-menu-item disabled>
+        <button mat-menu-item (click)="exportAllNets()">
+          <mat-icon>archive</mat-icon>
+          Export All Nets (ZIP)
+        </button>
+        <button mat-menu-item (click)="sendData()">
           <mat-icon>share</mat-icon>
           Send Data
         </button>
-        <button mat-menu-item disabled>
+        <button mat-menu-item (click)="printPdf()">
           <mat-icon>print</mat-icon>
           Print PDF
         </button>
         <mat-divider></mat-divider>
-        <button mat-menu-item disabled>
+        <button mat-menu-item (click)="openAbout()">
           <mat-icon>info</mat-icon>
           About
         </button>
+        @if (userService.isRoot()) {
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="openRemoveData()" class="danger-item">
+            <mat-icon>delete_forever</mat-icon>
+            Remove All Data
+          </button>
+        }
       </mat-menu>
     </div>
   </footer>
