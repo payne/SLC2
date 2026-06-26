@@ -1,59 +1,143 @@
-# HamNetLogger
+# Ham Radio Net Logger
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.4.
+A Progressive Web App for logging amateur radio **nets** (scheduled on-air check-in sessions, commonly used for emergency communications and training). It works offline and syncs when connectivity returns.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Offline-first**: Works through intermittent connectivity using Firebase Firestore's persistent cache
+- **Real-time sync**: All viewers see check-ins and edits live
+- **Excel-like grid**: AG Grid with sorting, filtering, column resize, and inline editing
+- **Roster management**: Import/export via CSV, autocomplete when logging check-ins
+- **Configurable attributes**: Up to 8 custom columns mapped to roster attributes
+- **Invite-only access**: Tier-based permissions (operator/inviter/root)
+- **PWA installable**: Works as a native app on desktop and mobile
+
+## Technology Stack
+
+- **Angular 22** (standalone components, zoneless, signals)
+- **Angular Material** (UI components)
+- **AG Grid Community** (data grid)
+- **Firebase** (Firestore, Auth, Hosting)
+- **AngularFire** (Angular-Firebase integration)
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 22.22.3+ (or use nvm)
+- Firebase CLI: `npm install -g firebase-tools`
+
+### Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone <repo-url>
+   cd ham-net-logger
+   npm install --legacy-peer-deps
+   ```
+
+2. Start the Firebase emulators and dev server:
+   ```bash
+   npm run dev
+   ```
+   This runs emulators on ports 8080 (Firestore) and 9099 (Auth), and the Angular dev server on port 4200.
+
+3. Seed initial data (in a new terminal):
+   ```bash
+   npm run seed
+   ```
+   This creates root users (N3PAY, KF0SLC) and sample roster data.
+
+4. Open http://localhost:4200
+
+### Running Tests
 
 ```bash
-ng serve
+# Unit tests (Vitest)
+npm test
+
+# Firestore rules tests
+npm run test:rules
+
+# E2E tests (Playwright)
+npm run e2e
+
+# E2E with UI
+npm run e2e:ui
+
+# Training video recordings
+npm run e2e:training
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Project Structure
 
-## Code scaffolding
+```
+src/app/
+  core/           # Firebase providers, auth, guards, services
+  shared/         # Utilities, pipes, shared components, models
+  features/
+    auth/         # Sign-in, invitation claim
+    admin/        # Invite, promote, demote, manage users
+    roster/       # People management, CSV import/export
+    net-log/      # AG Grid log view, check-in entry, NCS controls
+```
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## User Tiers
 
+| Tier | Capabilities |
+|------|--------------|
+| **Operator** | View any net with the code; act as NCS |
+| **Inviter** | + Create nets, invite users, promote operators |
+| **Root** | + Demote users, remove users (seed-list only) |
+
+## Seeding Root Users
+
+Root users must be seeded via the Admin SDK script. Edit `seed/seed-users.ts` with the Gmail addresses for your root users:
+
+```typescript
+const ROOT_USERS = [
+  { email: 'n3pay@example.com', callsign: 'N3PAY' },
+  { email: 'kf0slc@example.com', callsign: 'KF0SLC' },
+];
+```
+
+Then run:
 ```bash
-ng generate component component-name
+# Emulator mode
+npm run seed
+
+# Production (requires confirmation)
+npm run seed:prod
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Firestore Security Rules
 
+Security rules are in `firestore.rules`. Key rules:
+- Invite-only: Users must have a pending invitation to create their account
+- Tier checks: Inviter+ required for net creation, root required for demotions
+- NCS-only writes: Only the NCS or backup controller can edit check-ins
+- Membership-gated reads: Must be a net member to view check-ins
+
+Test the rules:
 ```bash
-ng generate --help
+npm run test:rules
 ```
 
-## Building
+## Deployment
 
-To build the project run:
+The app deploys to Firebase Hosting via GitHub Actions on push to `main`.
 
+Manual deploy:
 ```bash
-ng build
+npm run build:prod
+firebase deploy --only hosting
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Environment Configuration
 
-## Running unit tests
+- `src/environments/environment.ts` - Development (emulators)
+- `src/environments/environment.prod.ts` - Production
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## License
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+MIT

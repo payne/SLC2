@@ -24,6 +24,59 @@ can resume without re-reading the whole codebase.
 
 ---
 
+## 2026-06-25 (Phase 7 Complete)
+
+**Did:**
+- Updated PWA manifest with proper metadata:
+  - App name: "Ham Radio Net Logger"
+  - Short name: "Net Logger"
+  - Theme color: #1a237e (indigo)
+  - Background color: #fafafa
+  - Added description, orientation, categories
+- Created comprehensive README.md:
+  - Feature overview and tech stack
+  - Development setup with emulators
+  - Testing instructions (unit, rules, e2e)
+  - Project structure documentation
+  - User tier explanation
+  - Seeding and deployment instructions
+- Created CONTRIBUTING.md:
+  - Development setup guide
+  - Project conventions (Angular, naming, style)
+  - Testing requirements
+  - PR process
+  - Security guidelines
+- Updated GitHub Actions CI workflow:
+  - Added deployment job that runs after successful build
+  - Deploys to Firebase Hosting on push to main
+  - Uses FirebaseExtended/action-hosting-deploy action
+
+**Why:**
+- Phase 7 requirement: PWA polish, documentation, deployment automation
+
+**Decisions:**
+- Used indigo (#1a237e) as theme color to match app header
+- Firebase Hosting deployment requires FIREBASE_SERVICE_ACCOUNT secret
+- Kept deployment conditional on main branch push only
+
+**Acceptance Criteria Met:**
+- [x] PWA manifest with proper metadata and icons
+- [x] README explains seeding and emulator development
+- [x] CONTRIBUTING explains conventions and PR process
+- [x] GitHub Actions deploys to Firebase Hosting on main push
+
+**All Phases Complete:**
+- Phase 0: Scaffold (Angular 22, zoneless, Material, AG Grid, Firebase)
+- Phase 1: Identity & access (invite-only, tiers, audit log, NCS claim)
+- Phase 2: Roster + CSV (CRUD, import/export, attribute config)
+- Phase 3: Net logging (AG Grid, real-time sync, column chooser)
+- Phase 4: Export, send & print (CSV, ZIP, PDF, Web Share)
+- Phase 5: Responsive + presence (mobile viewer, presence list)
+- Phase 6: E2E + training videos (Playwright, offline test)
+- Phase 7: Polish & deploy (PWA, docs, GitHub Actions)
+
+---
+
 ## 2026-06-25 (Phase 6 Complete)
 
 **Did:**

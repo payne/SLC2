@@ -1,9 +1,14 @@
 {
-  "name": "ham-net-logger",
-  "short_name": "ham-net-logger",
+  "name": "Ham Radio Net Logger",
+  "short_name": "Net Logger",
+  "description": "Progressive Web App for logging amateur radio net check-ins with offline support",
+  "theme_color": "#1a237e",
+  "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
+  "orientation": "any",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "icons/icon-72x72.png",
